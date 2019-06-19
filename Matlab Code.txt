@@ -1,0 +1,106 @@
+Corrmat = ...
+[1,0.4880,0.4780,0.5150,0.4390,0.5120,0.4910;
+0.4880,1,0.6640,0.6550,0.3100,0.6080,0.7790;
+0.4780,0.6640,1,0.8610,0.3550,0.7830,0.6680;
+0.5150,0.6550,0.8610,1,0.3540,0.7770,0.6530;
+0.4390,0.3100,0.3550,0.3540,1,0.4050,0.3060;
+0.5120,0.6080,0.7830,0.7770,0.4050,1,0.6520;
+0.4910,0.7790,0.6680,0.6530,0.3060,0.6520,1;];
+RiskAversion =2.5;
+stdevs = ...
+[16.0000
+20.3000
+24.8000
+27.1000
+21.0000
+20.0000
+18.7000]./100;
+MktWeight = ...
+[   1.6000
+2.2000
+5.2000
+5.5000
+11.6000
+12.4000
+61.5000]./100;
+tau = 0.05;
+Covmat = Corrmat .* (stdevs * stdevs');
+EqRiskPrem = RiskAversion * Covmat * MktWeight;
+AssetNames = {'Australia','Canada','France','Germany','Japan',...
+'UK','USA'};
+Table2 = [{'Assets' 'Std Dev' 'Weq' 'PI'};
+{'------' '------' '---'  '--'};
+AssetNames' num2cell([stdevs MktWeight EqRiskPrem]*100)]
+P = [  0
+0
+-29.5
+100
+0
+-70.5
+0]'./100;
+Q = 5/100;
+Omega = diag(diag(P*tau*Covmat*P'));
+PostCov = inv(inv(tau*Covmat) + (P' * inv(Omega) * P));
+SigmaP = Covmat + PostCov;
+ExpRet = inv(inv(tau*Covmat) + P' * inv(Omega) * P) * ...
+(inv(tau*Covmat) * EqRiskPrem + P' * inv(Omega) * Q);
+OptimalWeights = (1/RiskAversion)* inv(SigmaP) * ExpRet;
+Tab4Col4 = OptimalWeights - (MktWeight)/(1+tau);
+Table4 = [{'Assets'  'P'  'MU'   'W' 'W - Weq/1+tau'};
+{'------' '--' '---'  '--' '-------------'};
+AssetNames' num2cell([P' ExpRet OptimalWeights ...
+round(Tab4Col4 * 1000)./1000]*100)]
+P1 = [P;  0, 1, 0, 0, 0, 0, -1];
+Q1= [0.05,0.03]';
+Omega1 = diag(diag(P1*tau*Covmat*P1'));
+PostCov1 = inv(inv(tau*Covmat) + (P1' * inv(Omega1) * P1));
+SigmaP1 = Covmat + PostCov1;
+ExpRet1 = inv(inv(tau*Covmat) + P1' * inv(Omega1) * P1) * ...
+(inv(tau*Covmat) * EqRiskPrem + P1' * inv(Omega1) * Q1);
+OptimalWeights1 = (1/RiskAversion)* inv(SigmaP1) * ExpRet1;
+Tab5Col5 = OptimalWeights1 - (MktWeight)/(1+tau);
+Table5 = [{'Assets'  'P' '' 'MU'   'W' 'W - Weq/1+tau'};
+{'------' '--' '--' '---'  '--' '-------------'};
+AssetNames' num2cell([P1' ExpRet1 OptimalWeights1 ...
+round(Tab5Col5 * 1000)./1000]*100)]
+P2 = [P;  0, 1, 0, 0, 0, 0, -1];
+Q2= [0.05,0.04]';
+Omega2 = diag(diag(P2*tau*Covmat*P2'));
+PostCov2 = inv(inv(tau*Covmat) + (P2' * inv(Omega2) * P2));
+SigmaP2 = Covmat + PostCov2;
+ExpRet2 = inv(inv(tau*Covmat) + P2' * inv(Omega2) * P2) * ...
+(inv(tau*Covmat) * EqRiskPrem + P2' * inv(Omega2) * Q2);
+OptimalWeights2 = (1/RiskAversion)* inv(SigmaP2) * ExpRet2;
+Tab6Col5 = OptimalWeights2 - (MktWeight)/(1+tau);
+Table6 = [{'Assets'  'P' '' 'MU'   'W' 'W - Weq/1+tau'};
+{'------' '--' '--' '---'  '--' '-------------'};
+AssetNames' num2cell([P2' ExpRet2 OptimalWeights2 ...
+round(Tab6Col5 * 1000)./1000]*100)]
+P3 = [P;  0, 1, 0, 0, 0, 0, -1];
+Q3= [0.05,0.04]';
+Omega3 = diag(diag(P3*tau*Covmat*P3'));
+Omega3 = [Omega3(1,:)*2;Omega3(2,:)];
+PostCov3 = inv(inv(tau*Covmat) + (P3' * inv(Omega3) * P3));
+SigmaP3 = Covmat + PostCov3;
+ExpRet3 = inv(inv(tau*Covmat) + P3' * inv(Omega3) * P3) * ...
+(inv(tau*Covmat) * EqRiskPrem + P3' * inv(Omega3) * Q3);
+OptimalWeights3 = (1/RiskAversion)* inv(SigmaP3) * ExpRet3;
+Tab7Col5 = OptimalWeights3 - (MktWeight)/(1+tau);
+Table7 = [{'Assets'  'P' '' 'MU'   'W' 'W - Weq/1+tau'};
+{'------' '--' '--' '---'  '--' '-------------'};
+AssetNames' num2cell([P3' ExpRet3 OptimalWeights3 ...
+round(Tab7Col5 * 1000)./1000]*100)]
+P4 = [P3;  0, 1, 0, 0, -1, 0, 0];
+Q4= [0.05,0.04,0.0412]';
+Omega4 = diag(diag(P4*tau*Covmat*P4'));
+Omega4 = [Omega4(1,:)*2;Omega4(2,:);Omega4(3,:)];    
+PostCov4 = inv(inv(tau*Covmat) + (P4' * inv(Omega4) * P4));
+SigmaP4 = Covmat + PostCov4;
+ExpRet4 = inv(inv(tau*Covmat) + P4' * inv(Omega4) * P4) * ...
+(inv(tau*Covmat) * EqRiskPrem + P4' * inv(Omega4) * Q4);
+OptimalWeights4 = (1/RiskAversion)* inv(SigmaP4) * ExpRet4;
+Tab8Col6 = OptimalWeights4 - (MktWeight)/(1+tau);
+Table8 = [{'Assets'  'P' '' '' 'MU' 'W' 'W - Weq/1+tau'};
+{'------' '--' '--' '--' '---'  '--' '-------------'};
+AssetNames' num2cell([P4' ExpRet4 OptimalWeights4 ...
+round(Tab8Col6 * 1000)./1000]*100)]
